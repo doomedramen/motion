@@ -1,0 +1,24 @@
+{
+  "name": "motion",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wookoouk/motion.git"
+  },
+  "author": "Martin Page",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wookoouk/motion/issues"
+  },
+  "homepage": "https://github.com/wookoouk/motion#readme",
+  "dependencies": {
+    "jquery": "^3.3.1",
+    "lodash": "^4.17.10",
+    "two.js": "^0.7.0-alpha.1"
+  }
+}
