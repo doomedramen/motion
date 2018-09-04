@@ -1,3 +1,11 @@
+import $ from 'jquery';
+import Two from 'two.js';
+import _ from 'lodash';
+import * as createjs from '@createjs/tweenjs';
+
+// console.log(Tween);
+
+
 class Eyes {
 
     constructor() {

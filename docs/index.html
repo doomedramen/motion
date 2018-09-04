@@ -1,1 +1,60 @@
-<!doctype html><html> <head> <title>Motion</title> <meta charset="utf-8"> <meta name="viewport" content="user-scalable=no"> <style>#content{position:absolute;top:50%;left:0;margin-top:-200px;min-width:1215px;width:100%;text-align:center}</style> </head> <body> <div id="content"></div> <script src="/jquery.aa656eca.js"></script> <script src="/two.min.626cf01c.js"></script> <script src="/lodash.min.5c3b99e3.js"></script> <script src="/tweenjs.min.9edb769a.js"></script> <script src="/eyes.34f7da5b.js"></script> <script>var eyes=new Eyes;function getRandomInt(e,t){return Math.floor(Math.random()*(t-e+1))+e}eyes.changeColors("#65A7AF"),eyes.kawaii(),setTimeout(()=>{eyes.squint(),setTimeout(()=>{eyes.reset()},1e3)},1e3),setInterval(()=>{eyes.blink()},1e4);</script> </body> </html>
+<!doctype html>
+<html>
+<head>
+    <title>Motion</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="user-scalable=no">
+    <style>
+        #content {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            margin-top: -200px;
+            min-width: 1215px;
+            width: 100%;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<div id="content"></div>
+
+<!--<script src="node_modules/jquery/dist/jquery.js"></script>-->
+<!--<script src="node_modules/two.js/build/two.min.js"></script>-->
+<!--<script src="node_modules/lodash/lodash.min.js"></script>-->
+<!--<script src="node_modules/@createjs/tweenjs/dist/tweenjs.min.js"></script>-->
+
+<script src="eyes.js"></script>
+
+<script>
+    var eyes = new Eyes();
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    eyes.changeColors('#65A7AF');
+
+    eyes.kawaii();
+
+    setTimeout(() => {
+        eyes.squint();
+
+        setTimeout(() => {
+            eyes.reset()
+        }, 1000)
+
+
+    }, 1000);
+
+
+    setInterval(() => {
+        eyes.blink();
+    }, 10000);
+
+
+
+</script>
+</body>
+</html>
