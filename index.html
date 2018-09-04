@@ -34,11 +34,26 @@
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
+    eyes.changeColors('#65A7AF');
+
+    eyes.kawaii();
+
+    setTimeout(() => {
+        eyes.squint();
+
+        setTimeout(() => {
+            eyes.reset()
+        }, 1000)
+
+
+    }, 1000);
+
+
     setInterval(() => {
         eyes.blink();
-    }, getRandomInt(5000, 10000));
+    }, 10000);
 
-    eyes.changeColors('#65A7AF');
+
 
 </script>
 </body>

@@ -4,17 +4,20 @@ class Eyes {
 
         const self = this;
 
+        this.height = 400;
+        this.width = 400;
+
         const container = $('#content')[0];
 
         Two.Resolution = 24;
 
         const eye1 = new Two({
-            width: 400,
-            height: 400
+            width: this.width,
+            height: this.height
         }).appendTo(container);
         const eye2 = new Two({
-            width: 400,
-            height: 400,
+            width: this.width,
+            height: this.height,
         }).appendTo(container);
 
         // const test = new Two({
@@ -119,8 +122,7 @@ class Eyes {
             eye.translation.set(two.width / 2, two.height / 2);
 
 
-
-            const mask = two.makeEllipse(two.width/2, two.height/2, two.height / 3, two.height / 4)
+            const mask = two.makeEllipse(two.width / 2, two.height / 2, two.height / 3, two.height / 4)
             eye.parts = {
                 mask,
                 ball,
@@ -145,22 +147,68 @@ class Eyes {
             + 0.66 + ')';
     }
 
-    blink() {
 
+    _doToBothEyes(func) {
         this.eyes.map(eye => {
-
-            const startHeight = eye.parts.lid.height;
-            const speed = 100;
-
-            createjs.Tween.get(eye.parts.lid)
-                .to({height: 0}, speed)
-                .to({height: startHeight}, speed)
-
-            createjs.Tween.get(eye.parts.mask)
-                .to({height: 0}, speed)
-                .to({height: startHeight}, speed)
-
+            func(eye);
         })
+    }
+
+    _doToLidAndMask(eye, func) {
+        func(eye.parts.mask);
+        func(eye.parts.lid);
+    }
+
+    reset() {
+        const speed = 200;
+        const self = this;
+        this._doToBothEyes(eye => {
+
+            this._doToLidAndMask(eye, function (part) {
+                createjs.Tween.get(part)
+                    .to({height: self.height / 2}, speed);
+            })
+        })
+    }
+
+    squint() {
+        const squintHeight = 100;
+        const speed = 200;
+
+        this._doToBothEyes(eye => {
+            this._doToLidAndMask(eye, function (part) {
+                createjs.Tween.get(part)
+                    .to({height: squintHeight}, speed);
+            });
+        });
+
+    }
+
+    blink() {
+        const closedHeight = 15;
+        const speed = 100;
+
+        this._doToBothEyes(eye => {
+            const startHeight = eye.parts.lid.height;
+            this._doToLidAndMask(eye, function (part) {
+                createjs.Tween.get(part)
+                    .to({height: closedHeight}, speed)
+                    .to({height: startHeight}, speed);
+            });
+        })
+    }
+
+
+    kawaii() {
+        this._doToBothEyes(eye => {
+            // const startHeight = eye.parts.lid.height;
+            this._doToLidAndMask(eye, function (part) {
+
+                part.height = 15;
+                part.curved = true;
+                console.log(part);
+            });
+        });
     }
 
     /**
