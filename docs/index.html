@@ -19,6 +19,7 @@
         .block {
             display: block;
         }
+
         button {
             font-size: 2rem;
             border-radius: 8px;
@@ -26,15 +27,16 @@
             padding: 8px;
         }
 
-        .actions, .mods{
+        .actions, .mods {
             z-index: 10000;
         }
 
-        .actions button{
+        .actions button {
             background: #2181F7;
             color: white;
         }
-        .mods button{
+
+        .mods button {
             background: #9eb547;
             color: white;
         }
@@ -51,6 +53,8 @@
     <button onclick="eyes.blink()">blink</button>
     <button onclick="eyes.annoyed()">annoyed</button>
     <button onclick="eyes.squint()">squint</button>
+    <button onclick="eyes.toggleClose()">toggle close</button>
+
 </div>
 <div class="block mods">
     <button onclick="eyes.toggleReflections()">toggle reflections</button>
@@ -62,30 +66,12 @@
 
     eyes.changeColors('#65A7AF');
 
-    var timesPerMinue = 10;
-    setInterval(() => {
-        eyes.blink();
-    }, 60000 / timesPerMinue);
 
 
-    // setTimeout(() => {
-    //     eyes.kawaii();
-    //     setTimeout(() => {
-    //         eyes.blink();
-    //         setTimeout(() => {
-    //             eyes.kawaii2();
-    //             setTimeout(() => {
-    //                 eyes.blink();
-    //                 setTimeout(() => {
-    //                     eyes.squint();
-    //                     setTimeout(() => {
-    //                         eyes.blink();
-    //                     }, 3000)
-    //                 }, 3000)
-    //             }, 3000)
-    //         }, 3000)
-    //     }, 3000)
-    // }, 3000)
+    // var timesPerMinue = 10;
+    // setInterval(() => {
+    //     eyes.blink();
+    // }, 60000 / timesPerMinue);
 
 </script>
 </body>

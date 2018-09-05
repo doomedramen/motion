@@ -41543,8 +41543,6 @@ var Eye = function () {
         this.height = two.height;
         this.width = two.width;
 
-        this.reflectionSize = two.height / 12;
-
         this.background = two.makeRectangle(two.width / 2, two.height / 2, two.width, two.height);
         this.background.noStroke();
         this.background.name = 'background';
@@ -41588,12 +41586,17 @@ var Eye = function () {
     }
 
     _createClass(Eye, [{
+        key: 'update',
+        value: function update() {
+            this.two.update();
+        }
+    }, {
         key: 'reset',
-        value: function reset() {
+        value: function reset(speed) {
             var _this = this;
 
             var startHeight = this.height / 2;
-            var speed = 100;
+            speed = speed || 100;
 
             return Promise.all([new Promise(function (good, bad) {
                 createjs.Tween.get(_this.lid).to({ height: startHeight }, speed).call(good);
@@ -41603,24 +41606,47 @@ var Eye = function () {
         }
     }, {
         key: 'blink',
-        value: function blink() {
+        value: function blink(speed) {
             var closedHeight = 15;
-            var speed = 100;
-            var startHeight = this.height / 2;
+            speed = speed || 100;
 
-            createjs.Tween.get(this.lid).to({ height: closedHeight }, speed).to({ height: startHeight }, speed);
+            createjs.Tween.get(this.lid).to({ height: closedHeight }, speed).to({ height: this.height / 2 }, speed);
 
-            createjs.Tween.get(this.mask).to({ height: closedHeight }, speed).to({ height: startHeight }, speed);
+            createjs.Tween.get(this.mask).to({ height: closedHeight }, speed).to({ height: this.height / 2 }, speed);
+        }
+    }, {
+        key: 'open',
+        value: function open(speed) {
+            var closedHeight = 15;
+            speed = speed || 100;
+
+            createjs.Tween.get(this.lid).to({ height: this.height / 2 }, speed);
+
+            createjs.Tween.get(this.mask).to({ height: this.height / 2 }, speed);
+
+            this.update();
+        }
+    }, {
+        key: 'close',
+        value: function close(speed) {
+            var closedHeight = 15;
+            speed = speed || 100;
+
+            createjs.Tween.get(this.lid).to({ height: closedHeight }, speed);
+
+            createjs.Tween.get(this.mask).to({ height: closedHeight }, speed);
+
+            this.update();
         }
     }, {
         key: 'squint',
-        value: function squint() {
+        value: function squint(speed) {
             var _this2 = this;
 
             //todo reset first
             this.reset().then(function () {
                 var closedHeight = 100;
-                var speed = 1000;
+                speed = speed || 1000;
 
                 createjs.Tween.get(_this2.lid).to({ height: closedHeight }, speed);
 
@@ -41629,13 +41655,13 @@ var Eye = function () {
         }
     }, {
         key: 'excited',
-        value: function excited() {
+        value: function excited(speed) {
             var _this3 = this;
 
             //todo reset first
             this.reset().then(function () {
 
-                var speed = 300;
+                speed = speed || 300;
                 for (var i = 0; i < _this3.lid.vertices.length; i++) {
                     var v = _this3.lid.vertices[i];
                     var vv = _this3.mask.vertices[i];
@@ -41648,19 +41674,19 @@ var Eye = function () {
                         createjs.Tween.get(vv).to({ y: 0 }, speed);
                     }
 
-                    _this3.two.update();
+                    _this3.update();
                 }
             });
         }
     }, {
         key: 'annoyed',
-        value: function annoyed() {
+        value: function annoyed(speed) {
             var _this4 = this;
 
             //todo reset first
             this.reset().then(function () {
 
-                var speed = 400;
+                speed = speed || 400;
                 for (var i = 0; i < _this4.lid.vertices.length; i++) {
                     var v = _this4.lid.vertices[i];
                     var vv = _this4.mask.vertices[i];
@@ -41679,8 +41705,8 @@ var Eye = function () {
         }
     }, {
         key: 'toggleReflection',
-        value: function toggleReflection() {
-            var speed = 300;
+        value: function toggleReflection(speed) {
+            speed = speed || 300;
             if (this.reflection.opacity === 0) {
                 createjs.Tween.get(this.reflection).to({ opacity: 1 }, speed);
             } else {
@@ -41790,37 +41816,49 @@ var Eyes = function () {
         }
     }, {
         key: 'squint',
-        value: function squint() {
+        value: function squint(speed) {
             this.eyes.map(function (eye) {
-                eye.squint();
+                eye.squint(speed);
             });
         }
     }, {
         key: 'blink',
-        value: function blink() {
+        value: function blink(speed) {
             this.eyes.map(function (eye) {
-                eye.blink();
+                eye.blink(speed);
             });
         }
     }, {
         key: 'excited',
-        value: function excited() {
+        value: function excited(speed) {
             this.eyes.map(function (eye) {
-                eye.excited();
+                eye.excited(speed);
             });
         }
     }, {
         key: 'annoyed',
-        value: function annoyed() {
+        value: function annoyed(speed) {
             this.eyes.map(function (eye) {
-                eye.annoyed();
+                eye.annoyed(speed);
             });
         }
     }, {
         key: 'toggleReflections',
-        value: function toggleReflections() {
+        value: function toggleReflections(speed) {
             this.eyes.map(function (eye) {
-                eye.toggleReflection();
+                eye.toggleReflection(speed);
+            });
+        }
+    }, {
+        key: 'toggleClose',
+        value: function toggleClose(speed) {
+            this.eyes.map(function (eye) {
+
+                if (eye.lid.height < eye.height / 2) {
+                    eye.open(speed);
+                } else {
+                    eye.close(speed);
+                }
             });
         }
 

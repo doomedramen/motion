@@ -15,9 +15,6 @@ class Eye {
         this.height = two.height;
         this.width = two.width;
 
-        this.reflectionSize = two.height / 12;
-
-
         this.background = two.makeRectangle(two.width / 2, two.height / 2, two.width, two.height);
         this.background.noStroke();
         this.background.name = 'background';
@@ -64,9 +61,13 @@ class Eye {
 
     }
 
-    reset() {
+    update() {
+        this.two.update();
+    }
+
+    reset(speed) {
         const startHeight = this.height / 2;
-        const speed = 100;
+        speed = speed || 100;
 
         return Promise.all(
             [
@@ -84,26 +85,51 @@ class Eye {
         );
     }
 
-    blink() {
+    blink(speed) {
         const closedHeight = 15;
-        const speed = 100;
-        const startHeight = this.height / 2;
+        speed = speed || 100;
 
         createjs.Tween.get(this.lid)
             .to({height: closedHeight}, speed)
-            .to({height: startHeight}, speed);
+            .to({height: this.height / 2}, speed);
 
         createjs.Tween.get(this.mask)
             .to({height: closedHeight}, speed)
-            .to({height: startHeight}, speed);
+            .to({height: this.height / 2}, speed);
     }
 
-    squint() {
+    open(speed) {
+        const closedHeight = 15;
+        speed = speed || 100;
+
+        createjs.Tween.get(this.lid)
+            .to({height: this.height / 2}, speed);
+
+        createjs.Tween.get(this.mask)
+            .to({height: this.height / 2}, speed);
+
+        this.update()
+    }
+
+    close(speed) {
+        const closedHeight = 15;
+        speed = speed || 100;
+
+        createjs.Tween.get(this.lid)
+            .to({height: closedHeight}, speed);
+
+        createjs.Tween.get(this.mask)
+            .to({height: closedHeight}, speed);
+
+        this.update()
+    }
+
+    squint(speed) {
         //todo reset first
         this.reset()
             .then(() => {
                 const closedHeight = 100;
-                const speed = 1000;
+                speed = speed || 1000;
 
                 createjs.Tween.get(this.lid)
                     .to({height: closedHeight}, speed);
@@ -115,12 +141,12 @@ class Eye {
     }
 
 
-    excited() {
+    excited(speed) {
         //todo reset first
         this.reset()
             .then(() => {
 
-                const speed = 300;
+                speed = speed || 300;
                 for (let i = 0; i < this.lid.vertices.length; i++) {
                     let v = this.lid.vertices[i];
                     let vv = this.mask.vertices[i];
@@ -136,17 +162,17 @@ class Eye {
                             .to({y: 0}, speed);
                     }
 
-                    this.two.update();
+                    this.update()
                 }
             });
     }
 
-    annoyed() {
+    annoyed(speed) {
         //todo reset first
         this.reset()
             .then(() => {
 
-                const speed = 400;
+                speed = speed || 400;
                 for (let i = 0; i < this.lid.vertices.length; i++) {
                     let v = this.lid.vertices[i];
                     let vv = this.mask.vertices[i];
@@ -167,8 +193,8 @@ class Eye {
             })
     }
 
-    toggleReflection() {
-        const speed = 300;
+    toggleReflection(speed) {
+        speed = speed || 300;
         if (this.reflection.opacity === 0) {
             createjs.Tween.get(this.reflection)
                 .to({opacity: 1}, speed);
@@ -280,34 +306,45 @@ class Eyes {
             + 0.66 + ')';
     }
 
-    squint() {
+    squint(speed) {
         this.eyes.map(eye => {
-            eye.squint();
+            eye.squint(speed);
         })
     }
 
-    blink() {
+    blink(speed) {
         this.eyes.map(eye => {
-            eye.blink();
+            eye.blink(speed);
         })
     }
 
 
-    excited() {
+    excited(speed) {
         this.eyes.map(eye => {
-            eye.excited();
+            eye.excited(speed);
         })
     }
 
-    annoyed() {
+    annoyed(speed) {
         this.eyes.map(eye => {
-            eye.annoyed();
+            eye.annoyed(speed);
         })
     }
 
-    toggleReflections() {
+    toggleReflections(speed) {
         this.eyes.map(eye => {
-            eye.toggleReflection()
+            eye.toggleReflection(speed);
+        })
+    }
+
+    toggleClose(speed) {
+        this.eyes.map(eye => {
+
+            if (eye.lid.height < eye.height / 2) {
+                eye.open(speed);
+            } else {
+                eye.close(speed);
+            }
         })
     }
 
