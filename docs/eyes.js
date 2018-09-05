@@ -41543,6 +41543,8 @@ var Eye = function () {
         this.height = two.height;
         this.width = two.width;
 
+        this.reflectionSize = two.height / 12;
+
         this.background = two.makeRectangle(two.width / 2, two.height / 2, two.width, two.height);
         this.background.noStroke();
         this.background.name = 'background';
@@ -41560,7 +41562,7 @@ var Eye = function () {
         this.pupil.fill = '#333';
         this.pupil.linewidth = 10;
         this.pupil.noStroke();
-        this.reflection = two.makeCircle(two.height / 12, -two.height / 12, two.height / 12);
+        this.reflection = two.makeCircle(this.reflectionSize, -this.reflectionSize, this.reflectionSize);
         this.reflection.fill = 'rgba(255, 255, 255, 0.9)';
         this.reflection.noStroke();
 
@@ -41580,7 +41582,7 @@ var Eye = function () {
         eyeMask.add(this.eye);
         eyeMask.mask = this.mask;
 
-        this.resetLidvertices = _lodash2.default.clone(this.lid.vertices);
+        // this.resetLidvertices = _.clone(this.lid.vertices);
 
         // return eye;
     }
@@ -41633,7 +41635,7 @@ var Eye = function () {
             //todo reset first
             this.reset().then(function () {
 
-                var speed = 400;
+                var speed = 300;
                 for (var i = 0; i < _this3.lid.vertices.length; i++) {
                     var v = _this3.lid.vertices[i];
                     var vv = _this3.mask.vertices[i];
@@ -41674,6 +41676,16 @@ var Eye = function () {
                     _this4.two.update();
                 }
             });
+        }
+    }, {
+        key: 'toggleReflection',
+        value: function toggleReflection() {
+            var speed = 300;
+            if (this.reflection.opacity === 0) {
+                createjs.Tween.get(this.reflection).to({ opacity: 1 }, speed);
+            } else {
+                createjs.Tween.get(this.reflection).to({ opacity: 0 }, speed);
+            }
         }
     }]);
 
@@ -41802,6 +41814,13 @@ var Eyes = function () {
         value: function annoyed() {
             this.eyes.map(function (eye) {
                 eye.annoyed();
+            });
+        }
+    }, {
+        key: 'toggleReflections',
+        value: function toggleReflections() {
+            this.eyes.map(function (eye) {
+                eye.toggleReflection();
             });
         }
 

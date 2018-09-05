@@ -15,6 +15,8 @@ class Eye {
         this.height = two.height;
         this.width = two.width;
 
+        this.reflectionSize = two.height / 12;
+
 
         this.background = two.makeRectangle(two.width / 2, two.height / 2, two.width, two.height);
         this.background.noStroke();
@@ -34,7 +36,7 @@ class Eye {
         this.pupil.fill = '#333';
         this.pupil.linewidth = 10;
         this.pupil.noStroke();
-        this.reflection = two.makeCircle(two.height / 12, -two.height / 12, two.height / 12);
+        this.reflection = two.makeCircle(this.reflectionSize, -this.reflectionSize, this.reflectionSize);
         this.reflection.fill = 'rgba(255, 255, 255, 0.9)';
         this.reflection.noStroke();
 
@@ -56,7 +58,7 @@ class Eye {
         eyeMask.add(this.eye);
         eyeMask.mask = this.mask;
 
-        this.resetLidvertices = _.clone(this.lid.vertices);
+        // this.resetLidvertices = _.clone(this.lid.vertices);
 
         // return eye;
 
@@ -118,7 +120,7 @@ class Eye {
         this.reset()
             .then(() => {
 
-                const speed = 400;
+                const speed = 300;
                 for (let i = 0; i < this.lid.vertices.length; i++) {
                     let v = this.lid.vertices[i];
                     let vv = this.mask.vertices[i];
@@ -163,6 +165,17 @@ class Eye {
                     this.two.update();
                 }
             })
+    }
+
+    toggleReflection() {
+        const speed = 300;
+        if (this.reflection.opacity === 0) {
+            createjs.Tween.get(this.reflection)
+                .to({opacity: 1}, speed);
+        } else {
+            createjs.Tween.get(this.reflection)
+                .to({opacity: 0}, speed);
+        }
     }
 }
 
@@ -289,6 +302,12 @@ class Eyes {
     annoyed() {
         this.eyes.map(eye => {
             eye.annoyed();
+        })
+    }
+
+    toggleReflections() {
+        this.eyes.map(eye => {
+            eye.toggleReflection()
         })
     }
 

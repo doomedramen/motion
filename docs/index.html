@@ -6,6 +6,7 @@
     <meta name="viewport" content="user-scalable=no">
     <style>
         #content {
+            display: block;
             position: absolute;
             top: 50%;
             left: 0;
@@ -15,30 +16,45 @@
             text-align: center;
         }
 
+        .block {
+            display: block;
+        }
         button {
             font-size: 2rem;
             border-radius: 8px;
+
+            padding: 8px;
+        }
+
+        .actions, .mods{
+            z-index: 10000;
+        }
+
+        .actions button{
             background: #2181F7;
             color: white;
-            padding: 8px;
+        }
+        .mods button{
+            background: #9eb547;
+            color: white;
         }
     </style>
 </head>
 <body>
 <div id="content"></div>
 
-<!--<script src="node_modules/jquery/dist/jquery.js"></script>-->
-<!--<script src="node_modules/two.js/build/two.min.js"></script>-->
-<!--<script src="node_modules/lodash/lodash.min.js"></script>-->
-<!--<script src="node_modules/@createjs/tweenjs/dist/tweenjs.min.js"></script>-->
 
 <script src="eyes.js"></script>
 
-
-<button onclick="eyes.excited()">excited</button>
-<button onclick="eyes.blink()">blink</button>
-<button onclick="eyes.annoyed()">annoyed</button>
-<button onclick="eyes.squint()">squint</button>
+<div class="block actions">
+    <button onclick="eyes.excited()">excited</button>
+    <button onclick="eyes.blink()">blink</button>
+    <button onclick="eyes.annoyed()">annoyed</button>
+    <button onclick="eyes.squint()">squint</button>
+</div>
+<div class="block mods">
+    <button onclick="eyes.toggleReflections()">toggle reflections</button>
+</div>
 
 
 <script>
@@ -46,7 +62,7 @@
 
     eyes.changeColors('#65A7AF');
 
-    var timesPerMinue = 5;
+    var timesPerMinue = 10;
     setInterval(() => {
         eyes.blink();
     }, 60000 / timesPerMinue);
