@@ -5,6 +5,166 @@ import * as createjs from '@createjs/tweenjs';
 
 // console.log(Tween);
 
+class Eye {
+    constructor(two, color) {
+
+        const self = this;
+        this.two = two;
+        this.color = color;
+
+        this.height = two.height;
+        this.width = two.width;
+
+
+        this.background = two.makeRectangle(two.width / 2, two.height / 2, two.width, two.height);
+        this.background.noStroke();
+        this.background.name = 'background';
+
+        var eyeMask = two.makeGroup(this.background);
+
+        this.ball = two.makeGroup();
+        this.eye = two.makeGroup();
+
+
+        this.retina = two.makeCircle(0, 0, two.height / 4);
+        this.retina.fill = color || self.getRandomColor();
+        this.retina.noStroke();
+
+        this.pupil = two.makeCircle(0, 0, two.height / 6);
+        this.pupil.fill = '#333';
+        this.pupil.linewidth = 10;
+        this.pupil.noStroke();
+        this.reflection = two.makeCircle(two.height / 12, -two.height / 12, two.height / 12);
+        this.reflection.fill = 'rgba(255, 255, 255, 0.9)';
+        this.reflection.noStroke();
+
+        this.lid = two.makeEllipse(0, 0, two.height / 3, two.height / 4);
+        this.lid.stroke = '#333';
+        this.lid.linewidth = 15;
+        this.lid.noFill();
+
+
+        this.ball.add(this.retina, this.pupil, this.reflection);
+        this.ball.destination = new Two.Vector();
+
+        this.eye.add(this.ball, this.lid);
+        this.eye.translation.set(two.width / 2, two.height / 2);
+
+
+        this.mask = two.makeEllipse(two.width / 2, two.height / 2, two.height / 3, two.height / 4);
+
+        eyeMask.add(this.eye);
+        eyeMask.mask = this.mask;
+
+        this.resetLidvertices = _.clone(this.lid.vertices);
+
+        // return eye;
+
+    }
+
+    reset() {
+        const startHeight = this.height / 2;
+        const speed = 100;
+
+        return Promise.all(
+            [
+                new Promise((good, bad) => {
+                    createjs.Tween.get(this.lid)
+                        .to({height: startHeight}, speed)
+                        .call(good)
+                }),
+                new Promise((good, bad) => {
+                    createjs.Tween.get(this.mask)
+                        .to({height: startHeight}, speed)
+                        .call(good)
+                })
+            ]
+        );
+    }
+
+    blink() {
+        const closedHeight = 15;
+        const speed = 100;
+        const startHeight = this.height / 2;
+
+        createjs.Tween.get(this.lid)
+            .to({height: closedHeight}, speed)
+            .to({height: startHeight}, speed);
+
+        createjs.Tween.get(this.mask)
+            .to({height: closedHeight}, speed)
+            .to({height: startHeight}, speed);
+    }
+
+    squint() {
+        //todo reset first
+        this.reset()
+            .then(() => {
+                const closedHeight = 100;
+                const speed = 1000;
+
+                createjs.Tween.get(this.lid)
+                    .to({height: closedHeight}, speed);
+
+                createjs.Tween.get(this.mask)
+                    .to({height: closedHeight}, speed);
+            });
+
+    }
+
+
+    excited() {
+        //todo reset first
+        this.reset()
+            .then(() => {
+
+                const speed = 400;
+                for (let i = 0; i < this.lid.vertices.length; i++) {
+                    let v = this.lid.vertices[i];
+                    let vv = this.mask.vertices[i];
+
+
+                    if (v.y > 0) {
+                        createjs.Tween.get(v)
+                            .to({y: 0}, speed);
+                    }
+
+                    if (vv.y > 0) {
+                        createjs.Tween.get(vv)
+                            .to({y: 0}, speed);
+                    }
+
+                    this.two.update();
+                }
+            });
+    }
+
+    annoyed() {
+        //todo reset first
+        this.reset()
+            .then(() => {
+
+                const speed = 400;
+                for (let i = 0; i < this.lid.vertices.length; i++) {
+                    let v = this.lid.vertices[i];
+                    let vv = this.mask.vertices[i];
+
+
+                    if (v.y < 0) {
+                        createjs.Tween.get(v)
+                            .to({y: 0}, speed);
+                    }
+
+                    if (vv.y < 0) {
+                        createjs.Tween.get(vv)
+                            .to({y: 0}, speed);
+                    }
+
+                    this.two.update();
+                }
+            })
+    }
+}
 
 class Eyes {
 
@@ -17,7 +177,7 @@ class Eyes {
 
         const container = $('#content')[0];
 
-        Two.Resolution = 24;
+        Two.Resolution = 32;
 
         const eye1 = new Two({
             width: this.width,
@@ -28,6 +188,7 @@ class Eyes {
             height: this.height,
         }).appendTo(container);
 
+
         // const test = new Two({
         //     width: 400,
         //     height: 400,
@@ -35,16 +196,22 @@ class Eyes {
 
         const fixedEyeColor = self.getRandomColor();
         self.eyes = [
-            makeEye(eye1, fixedEyeColor),
-            makeEye(eye2, fixedEyeColor),
+            new Eye(eye1, fixedEyeColor),
+            new Eye(eye2, fixedEyeColor),
         ];
+
+        for (let i = 0; i < this.eyes.length; i++) {
+            setInterval(() => {
+                this.eyes[i].lid.y += 10;
+            }, 500);
+        }
 
         self.eyes[0].domElement = eye1.renderer.domElement;
         self.eyes[1].domElement = eye2.renderer.domElement;
 
         const releaseEyes = _.debounce(function () {
             _.each(self.eyes, function (eye) {
-                eye.parts.ball.destination.clear();
+                eye.ball.destination.clear();
             });
         }, 1000);
 
@@ -61,13 +228,13 @@ class Eyes {
 
         eye1.bind('update', function () {
             const eye = self.eyes[0];
-            eye.parts.ball.translation.x += (eye.parts.ball.destination.x - eye.parts.ball.translation.x) * 0.0625;
-            eye.parts.ball.translation.y += (eye.parts.ball.destination.y - eye.parts.ball.translation.y) * 0.0625;
+            eye.ball.translation.x += (eye.ball.destination.x - eye.ball.translation.x) * 0.0625;
+            eye.ball.translation.y += (eye.ball.destination.y - eye.ball.translation.y) * 0.0625;
         }).play();
         eye2.bind('update', function () {
             const eye = self.eyes[1];
-            eye.parts.ball.translation.x += (eye.parts.ball.destination.x - eye.parts.ball.translation.x) * 0.0625;
-            eye.parts.ball.translation.y += (eye.parts.ball.destination.y - eye.parts.ball.translation.y) * 0.0625;
+            eye.ball.translation.x += (eye.ball.destination.x - eye.ball.translation.x) * 0.0625;
+            eye.ball.translation.y += (eye.ball.destination.y - eye.ball.translation.y) * 0.0625;
         }).play();
 
         function mousemove(e) {
@@ -83,68 +250,13 @@ class Eyes {
                 const distance = mouse.distanceTo(center);
                 const pct = distance / $window.width();
                 const radius = 75 * pct;
-                eye.parts.ball.destination.set(radius * Math.cos(theta), radius * Math.sin(theta));
+                eye.ball.destination.set(radius * Math.cos(theta), radius * Math.sin(theta));
             });
 
             releaseEyes();
 
         }
 
-        function makeEye(two, color) {
-
-            const self = this;
-
-            var background = two.makeRectangle(two.width / 2, two.height / 2, two.width, two.height);
-            background.noStroke();
-            // background.fill = 'rgb(255, 255, 175)';
-            background.name = 'background';
-
-            var eyeMask = two.makeGroup(background);
-
-            const ball = two.makeGroup();
-            const eye = two.makeGroup();
-
-
-            const retina = two.makeCircle(0, 0, two.height / 4);
-            retina.fill = color || self.getRandomColor();
-            retina.noStroke();
-
-            const pupil = two.makeCircle(0, 0, two.height / 6);
-            pupil.fill = '#333';
-            pupil.linewidth = 10;
-            pupil.noStroke();
-            const reflection = two.makeCircle(two.height / 12, -two.height / 12, two.height / 12);
-            reflection.fill = 'rgba(255, 255, 255, 0.9)';
-            reflection.noStroke();
-
-            let lid = two.makeEllipse(0, 0, two.height / 3, two.height / 4);
-            lid.stroke = '#333';
-            lid.linewidth = 15;
-            lid.noFill();
-
-
-            ball.add(retina, pupil, reflection);
-            ball.destination = new Two.Vector();
-
-            eye.add(ball, lid);
-            eye.translation.set(two.width / 2, two.height / 2);
-
-
-            const mask = two.makeEllipse(two.width / 2, two.height / 2, two.height / 3, two.height / 4)
-            eye.parts = {
-                mask,
-                ball,
-                lid,
-                pupil,
-                retina
-            };
-
-            eyeMask.add(eye);
-
-            eyeMask.mask = mask;
-            return eye;
-
-        }
     }
 
     getRandomColor() {
@@ -155,68 +267,29 @@ class Eyes {
             + 0.66 + ')';
     }
 
-
-    _doToBothEyes(func) {
-        this.eyes.map(eye => {
-            func(eye);
-        })
-    }
-
-    _doToLidAndMask(eye, func) {
-        func(eye.parts.mask);
-        func(eye.parts.lid);
-    }
-
-    reset() {
-        const speed = 200;
-        const self = this;
-        this._doToBothEyes(eye => {
-
-            this._doToLidAndMask(eye, function (part) {
-                createjs.Tween.get(part)
-                    .to({height: self.height / 2}, speed);
-            })
-        })
-    }
-
     squint() {
-        const squintHeight = 100;
-        const speed = 200;
-
-        this._doToBothEyes(eye => {
-            this._doToLidAndMask(eye, function (part) {
-                createjs.Tween.get(part)
-                    .to({height: squintHeight}, speed);
-            });
-        });
-
+        this.eyes.map(eye => {
+            eye.squint();
+        })
     }
 
     blink() {
-        const closedHeight = 15;
-        const speed = 100;
-
-        this._doToBothEyes(eye => {
-            const startHeight = eye.parts.lid.height;
-            this._doToLidAndMask(eye, function (part) {
-                createjs.Tween.get(part)
-                    .to({height: closedHeight}, speed)
-                    .to({height: startHeight}, speed);
-            });
+        this.eyes.map(eye => {
+            eye.blink();
         })
     }
 
 
-    kawaii() {
-        this._doToBothEyes(eye => {
-            // const startHeight = eye.parts.lid.height;
-            this._doToLidAndMask(eye, function (part) {
+    excited() {
+        this.eyes.map(eye => {
+            eye.excited();
+        })
+    }
 
-                part.height = 15;
-                part.curved = true;
-                console.log(part);
-            });
-        });
+    annoyed() {
+        this.eyes.map(eye => {
+            eye.annoyed();
+        })
     }
 
     /**
@@ -227,8 +300,8 @@ class Eyes {
     changeColors(color1, color2) {
 
 
-        this.eyes[0].parts.retina.fill = color1;
-        this.eyes[1].parts.retina.fill = color2 || color1;
+        this.eyes[0].retina.fill = color1;
+        this.eyes[1].retina.fill = color2 || color1;
 
     }
 }

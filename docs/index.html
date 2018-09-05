@@ -15,6 +15,13 @@
             text-align: center;
         }
 
+        button {
+            font-size: 2rem;
+            border-radius: 8px;
+            background: #2181F7;
+            color: white;
+            padding: 8px;
+        }
     </style>
 </head>
 <body>
@@ -27,33 +34,42 @@
 
 <script src="eyes.js"></script>
 
+
+<button onclick="eyes.excited()">excited</button>
+<button onclick="eyes.blink()">blink</button>
+<button onclick="eyes.annoyed()">annoyed</button>
+<button onclick="eyes.squint()">squint</button>
+
+
 <script>
     var eyes = new Eyes();
 
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
     eyes.changeColors('#65A7AF');
 
-    eyes.kawaii();
-
-    setTimeout(() => {
-        eyes.squint();
-
-        setTimeout(() => {
-            eyes.reset()
-        }, 1000)
-
-
-    }, 1000);
-
-
+    var timesPerMinue = 5;
     setInterval(() => {
         eyes.blink();
-    }, 10000);
+    }, 60000 / timesPerMinue);
 
 
+    // setTimeout(() => {
+    //     eyes.kawaii();
+    //     setTimeout(() => {
+    //         eyes.blink();
+    //         setTimeout(() => {
+    //             eyes.kawaii2();
+    //             setTimeout(() => {
+    //                 eyes.blink();
+    //                 setTimeout(() => {
+    //                     eyes.squint();
+    //                     setTimeout(() => {
+    //                         eyes.blink();
+    //                     }, 3000)
+    //                 }, 3000)
+    //             }, 3000)
+    //         }, 3000)
+    //     }, 3000)
+    // }, 3000)
 
 </script>
 </body>
